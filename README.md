@@ -20,8 +20,8 @@ This project provides an Arduino code for interfacing with the uBlox Neo 6M GPS 
 ## Setup
 
 1. Connect the Neo 6M GPS module to your Arduino board:
-   - `TX` of GPS to pin `11` (GPS_RX_PIN) of Arduino (`10` on some boards)
-   - `RX` of GPS to pin `10` (GPS_TX_PIN) of Arduino (`09` on some boards)
+   - `TX` of GPS to pin `11` (GPS_RX_PIN) of Arduino
+   - `RX` of GPS to pin `10` (GPS_TX_PIN) of Arduino
    - Connect `GND` of GPS to `GND` of Arduino
    - Connect `VCC` of GPS to appropriate power (usually `3.3V` or `5V` depending on your module) of Arduino
 
