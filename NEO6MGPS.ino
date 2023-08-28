@@ -21,7 +21,7 @@ void setup() {
     Serial.begin(9600);
     mySerial.begin(9600);
     delay(5000);
-    Serial.println("uBlox Neo 6M with TinyGPS++");
+    Serial.println("Neo 6M with TinyGPS++");
     Serial.println("----------------------------");
 }
 
@@ -53,6 +53,32 @@ byte daysInMonth(byte month, int year) {
         return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
     }
     return (month == 4 || month == 6 || month == 9 || month == 11) ? 30 : 31;
+}
+
+void adjustTimeForTimezone(int *hour, byte *day, byte *month, int *year) {
+    if (*hour < 0) {
+        *hour += 24;
+        (*day)--;
+        if (*day == 0) {
+            (*month)--;
+            if (*month == 0) {
+                (*month) = 12;
+                (*year)--;
+            }
+            *day = daysInMonth(*month, *year);
+        }
+    } else if (*hour >= 24) {
+        *hour -= 24;
+        (*day)++;
+        if (*day > daysInMonth(*month, *year)) {
+            (*day) = 1;
+            (*month)++;
+            if (*month > 12) {
+                (*month) = 1;
+                (*year)++;
+            }
+        }
+    }
 }
 
 // Display the processed GPS information
