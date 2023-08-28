@@ -16,13 +16,14 @@ void printFormattedFloat(double number, int digits = 2);
 const int timeZoneOffset = -8;
 const char* timeZoneName = "UTC -08:00 Pacific";
 const unsigned long UPDATE_INTERVAL_MS = 1000;
+bool printRawData = false;  // Set to true if you want to print raw data, false otherwise.
 
 void setup() {
     Serial.begin(9600);
     mySerial.begin(9600);
     delay(5000);
     Serial.println("Neo 6M with TinyGPS++");
-    Serial.println("----------------------------");
+    Serial.println("---------------------");
 }
 
 void loop() {
@@ -33,6 +34,9 @@ void loop() {
     while (millis() - start < UPDATE_INTERVAL_MS) {
         while (mySerial.available()) {
             char c = mySerial.read();
+            if(printRawData) {
+                Serial.write(c);  // Print the raw data to the console.
+            }
             if (gps.encode(c)) {
                 if (gps.location.isValid() && !newData) {
                     displayGPSInfo();
