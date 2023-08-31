@@ -14,11 +14,12 @@ TinyGPSPlus gps;
 // OLED display configuration
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
-#define OLED_RESET    -1
+#define OLED_RESET -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Screen management
-enum ScreenType {
+enum ScreenType
+{
     SCREEN_LOCATION_ALTITUDE_SPEED,
     SCREEN_DATETIME_SATELLITES,
     SCREEN_COUNT // Always keep this last
@@ -29,11 +30,12 @@ const unsigned long SCREEN_DURATION_MS = 5000; // Display each screen for 5 seco
 
 // Time zone and update settings
 const int timeZoneOffset = -8;
-const char* timeZoneName = "UTC -08:00 Pacific";
+const char *timeZoneName = "UTC -08:00 Pacific";
 const unsigned long UPDATE_INTERVAL_MS = 1000;
-bool printRawData = false;  // Set to true if you want to print raw data, false otherwise.
+bool printRawData = false; // Set to true if you want to print raw data, false otherwise.
 
-void setup() {
+void setup()
+{
     Serial.begin(9600);
     mySerial.begin(9600);
     delay(5000);
@@ -41,50 +43,58 @@ void setup() {
     Serial.println("---------------------");
 
     // Initialize OLED display
-    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    {
         Serial.println(F("SSD1306 allocation failed"));
-        for(;;);
+        for (;;)
+            ;
     }
     display.clearDisplay();
     display.display();
 }
 
-void loop() {
-    bool newData = false;  
-    unsigned long start = millis();
-
-    // Process GPS data within update interval
-    while (millis() - start < UPDATE_INTERVAL_MS && mySerial.available()) {
-        char c = mySerial.read();
-        if(printRawData) {
-            Serial.write(c);  // Print the raw data to the console.
-        }
-        if (gps.encode(c) && gps.location.isValid()) {
-            newData = true;
-        }
-    }
-
-    if (millis() - lastScreenUpdate > SCREEN_DURATION_MS) {
+void loop()
+{
+    // Check if it's time to update the screen first
+    if (millis() - lastScreenUpdate > SCREEN_DURATION_MS)
+    {
         displayGPSInfo();
-        switch (currentScreen) {
-            case SCREEN_LOCATION_ALTITUDE_SPEED:
-                displayLocationAltitudeSpeed();
-                break;
-            case SCREEN_DATETIME_SATELLITES:
-                displayDateTimeSatellites();
-                break;
-            default:
-                break;
+        switch (currentScreen)
+        {
+        case SCREEN_LOCATION_ALTITUDE_SPEED:
+            displayLocationAltitudeSpeed();
+            break;
+        case SCREEN_DATETIME_SATELLITES:
+            displayDateTimeSatellites();
+            break;
+        default:
+            break;
         }
 
         // Cycle to the next screen
         currentScreen = static_cast<ScreenType>((currentScreen + 1) % SCREEN_COUNT);
         lastScreenUpdate = millis();
     }
+
+    // Then process GPS data
+    unsigned long start = millis();
+    while (millis() - start < UPDATE_INTERVAL_MS && mySerial.available())
+    {
+        char c = mySerial.read();
+        if (printRawData)
+        {
+            Serial.write(c); // Print the raw data to the console.
+        }
+        if (gps.encode(c) && gps.location.isValid())
+        {
+            // Do something with the new GPS data if needed
+        }
+    }
 }
 
 // Helper function to initialize display settings
-void initDisplay() {
+void initDisplay()
+{
     display.clearDisplay();
     display.setCursor(0, 0);
     display.setTextSize(1);
@@ -92,7 +102,8 @@ void initDisplay() {
 }
 
 // Helper function to retrieve date and time
-void retrieveDateTime(int &year, byte &month, byte &day, byte &hour, byte &minute, byte &second) {
+void retrieveDateTime(int &year, byte &month, byte &day, byte &hour, byte &minute, byte &second)
+{
     year = gps.date.year();
     month = gps.date.month();
     day = gps.date.day();
@@ -101,67 +112,85 @@ void retrieveDateTime(int &year, byte &month, byte &day, byte &hour, byte &minut
     second = gps.time.second();
 }
 
-void printFormattedFloat(double number, int digits, bool toOLED = false) {
-    if (number < 0.0) {
-        if (toOLED) display.print('-');
-        else Serial.print('-');
+void printFormattedFloat(double number, int digits, bool toOLED = false)
+{
+    if (number < 0.0)
+    {
+        if (toOLED)
+            display.print('-');
+        else
+            Serial.print('-');
         number = -number;
     }
 
     double rounding = 0.5;
-    for (uint8_t i = 0; i < digits; ++i) {
+    for (uint8_t i = 0; i < digits; ++i)
+    {
         rounding /= 10.0;
     }
 
     number += rounding;
-    unsigned long intPart = (unsigned long) number;
-    double remainder = number - (double) intPart;
-    if (toOLED) display.print(intPart);
-    else Serial.print(intPart);
+    unsigned long intPart = (unsigned long)number;
+    double remainder = number - (double)intPart;
+    if (toOLED)
+        display.print(intPart);
+    else
+        Serial.print(intPart);
 
-    if (digits > 0) {
-        if (toOLED) display.print(".");
-        else Serial.print(".");
+    if (digits > 0)
+    {
+        if (toOLED)
+            display.print(".");
+        else
+            Serial.print(".");
     }
 
-    while (digits-- > 0) {
+    while (digits-- > 0)
+    {
         remainder *= 10.0;
         int toPrint = int(remainder);
-        if (toOLED) display.print(toPrint);
-        else Serial.print(toPrint);
+        if (toOLED)
+            display.print(toPrint);
+        else
+            Serial.print(toPrint);
         remainder -= toPrint;
     }
 }
 
-void displayLocationAltitudeSpeed() {
+void displayLocationAltitudeSpeed()
+{
     initDisplay();
-    
-    if (gps.location.isValid()) {
-        display.print("Lat: "); 
-        printFormattedFloat(gps.location.lat(), 5, true); 
+
+    if (gps.location.isValid())
+    {
+        display.print("Lat: ");
+        printFormattedFloat(gps.location.lat(), 5, true);
         display.print((char)247); // Degree symbol
         display.setCursor(0, 10);
-        display.print("Lng: "); 
+        display.print("Lng: ");
         printFormattedFloat(gps.location.lng(), 5, true);
         display.print((char)247);
         display.setCursor(0, 20);
-        display.print("Alt:"); 
+        display.print("Alt:");
         printFormattedFloat(gps.altitude.meters(), 1, true); // Reduced precision to 1 decimal place
         display.print("m ");
-        display.print("Spd:"); 
+        display.print("Spd:");
         printFormattedFloat(gps.speed.kmph(), 1, true); // Reduced precision to 1 decimal place
         display.print("kmh");
-    } else {
+    }
+    else
+    {
         display.println("GPS Data: Acquiring");
     }
     display.display();
 }
 
-
-void displayDateTimeSatellites() {
+void displayDateTimeSatellites()
+{
     initDisplay();
-    
-    if (gps.date.isValid() && gps.time.isValid()) {
+
+    if (gps.date.isValid() && gps.time.isValid())
+    {
         int year, localHour;
         byte month, day, hour, minute, second;
         retrieveDateTime(year, month, day, hour, minute, second);
@@ -177,44 +206,60 @@ void displayDateTimeSatellites() {
         display.print(buffer);
         display.setCursor(0, 20);
 
-        if (gps.satellites.isValid()) {
-            display.print("Sats: "); display.print(gps.satellites.value());
-        } else {
+        if (gps.satellites.isValid())
+        {
+            display.print("Sats: ");
+            display.print(gps.satellites.value());
+        }
+        else
+        {
             display.println("Sats: Acquiring");
         }
-    } else {
+    }
+    else
+    {
         display.println("Date & Time: Acquiring");
     }
     display.display();
 }
 
 // Helper function to determine the days in a month
-byte daysInMonth(byte month, int year) {
-    if(month == 2) {
+byte daysInMonth(byte month, int year)
+{
+    if (month == 2)
+    {
         return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
     }
     return (month == 4 || month == 6 || month == 9 || month == 11) ? 30 : 31;
 }
 
-void adjustTimeForTimezone(int *hour, byte *day, byte *month, int *year) {
-    if (*hour < 0) {
+void adjustTimeForTimezone(int *hour, byte *day, byte *month, int *year)
+{
+    if (*hour < 0)
+    {
         *hour += 24;
         (*day)--;
-        if (*day == 0) {
+        if (*day == 0)
+        {
             (*month)--;
-            if (*month == 0) {
+            if (*month == 0)
+            {
                 (*month) = 12;
                 (*year)--;
             }
             *day = daysInMonth(*month, *year);
         }
-    } else if (*hour >= 24) {
+    }
+    else if (*hour >= 24)
+    {
         *hour -= 24;
         (*day)++;
-        if (*day > daysInMonth(*month, *year)) {
+        if (*day > daysInMonth(*month, *year))
+        {
             (*day) = 1;
             (*month)++;
-            if (*month > 12) {
+            if (*month > 12)
+            {
                 (*month) = 1;
                 (*year)++;
             }
@@ -223,20 +268,29 @@ void adjustTimeForTimezone(int *hour, byte *day, byte *month, int *year) {
 }
 
 // Display the processed GPS information
-void displayGPSInfo() {
+void displayGPSInfo()
+{
 
     Serial.println("GPS Data:");
     Serial.println("---------");
-    
-    if (gps.location.isValid()) {
-        Serial.print("Latitude:  "); printFormattedFloat(gps.location.lat(), 5); Serial.println("°");
-        Serial.print("Longitude: "); printFormattedFloat(gps.location.lng(), 5); Serial.println("°");
-    } else {
+
+    if (gps.location.isValid())
+    {
+        Serial.print("Latitude:  ");
+        printFormattedFloat(gps.location.lat(), 5);
+        Serial.println("°");
+        Serial.print("Longitude: ");
+        printFormattedFloat(gps.location.lng(), 5);
+        Serial.println("°");
+    }
+    else
+    {
         Serial.println("Location: Acquiring...");
     }
 
     // Process and display date and time
-    if (gps.date.isValid() && gps.time.isValid()) {
+    if (gps.date.isValid() && gps.time.isValid())
+    {
         int year = gps.date.year();
         byte month = gps.date.month();
         byte day = gps.date.day();
@@ -253,24 +307,40 @@ void displayGPSInfo() {
         Serial.println(buffer);
         snprintf(buffer, sizeof(buffer), "Time (%s): %02d:%02d:%02d.%02d", timeZoneName, localHour, minute, second, hundredths);
         Serial.println(buffer);
-    } else {
+    }
+    else
+    {
         Serial.println("Date & Time: Acquiring...");
     }
 
-    if (gps.satellites.isValid()) {
-        Serial.print("Satellites: "); Serial.println(gps.satellites.value());
+    if (gps.satellites.isValid())
+    {
+        Serial.print("Satellites: ");
+        Serial.println(gps.satellites.value());
     }
-    if (gps.hdop.isValid()) {
-        Serial.print("HDOP: "); Serial.println(gps.hdop.value());
+    if (gps.hdop.isValid())
+    {
+        Serial.print("HDOP: ");
+        Serial.println(gps.hdop.value());
     }
-    if (gps.altitude.isValid()) {
-        Serial.print("Altitude: "); printFormattedFloat(gps.altitude.meters(), 2); Serial.println(" meters");
-    } else {
+    if (gps.altitude.isValid())
+    {
+        Serial.print("Altitude: ");
+        printFormattedFloat(gps.altitude.meters(), 2);
+        Serial.println(" meters");
+    }
+    else
+    {
         Serial.println("Altitude: Acquiring...");
     }
-    if (gps.speed.isValid()) {
-        Serial.print("Speed: "); printFormattedFloat(gps.speed.kmph(), 2); Serial.println(" km/h");
-    } else {
+    if (gps.speed.isValid())
+    {
+        Serial.print("Speed: ");
+        printFormattedFloat(gps.speed.kmph(), 2);
+        Serial.println(" km/h");
+    }
+    else
+    {
         Serial.println("Speed: Acquiring...");
     }
 
