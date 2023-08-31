@@ -40,3 +40,5 @@ This project provides an Arduino code for interfacing with the uBlox Neo 6M GPS 
 If you don't see any GPS data right away, make sure the GPS module has a clear view of the sky. The first-time satellite lock might take a few minutes.
 
 The provided `printFormattedFloat` function is a utility to display floating-point numbers with a specific number of decimal places in the Serial Monitor.
+
+There is an addional example for displaying data to an SSD1306 OLED display.
