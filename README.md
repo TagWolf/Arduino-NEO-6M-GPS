@@ -2,6 +2,11 @@
 
 This project provides an Arduino code for interfacing with the uBlox Neo 6M GPS module using the TinyGPS++ library. The application decodes the GPS data to provide location, altitude, speed, and other essential data.
 
+## Files
+
+- NEO6MGPS.ino = Base example with the NEO-6M GPS
+- NEO6MGPS-SSD1306.ino = Displays GPS data to an OLED display in addition to console
+
 ## Features
 
 - Retrieves and displays:
