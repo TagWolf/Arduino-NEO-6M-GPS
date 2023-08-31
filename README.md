@@ -5,7 +5,7 @@ This project provides an Arduino code for interfacing with the uBlox Neo 6M GPS 
 ## Files
 
 - **NEO6MGPS.ino** is a base example with the NEO-6M GPS
-- **NEO6MGPS-SSD1306.ino** also displays GPS data to an 0.91" SSD1306 OLED
+- **NEO6MGPS-SSD1306.ino** also displays GPS data to a 0.91" SSD1306 OLED
 
 ## Features
 
